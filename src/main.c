@@ -41,16 +41,33 @@ struct Node *GetSuccessor(struct Node *currentNode) {
   return currentNode;
 }
 
-int RemoveNode(struct Node *currentNode, double value) {
-
-  struct Node *nodeOfInterest = Search(currentNode, value);
-  if (nodeOfInterest == NULL) {
-    return -1;
+struct Node *RemoveNode(struct Node *currentNode, double value) {
+  if (currentNode == NULL) {
+    return currentNode;
   }
-  struct Node *nodeSuccessor = GetSuccessor(nodeOfInterest);
-  
-  // TODO
 
+  if (currentNode->value > value) {
+    currentNode->left = RemoveNode(currentNode->left, value);
+  } else if (currentNode->value < value) {
+    currentNode->right = RemoveNode(currentNode->right, value);
+  } else {
+    if (currentNode->left == NULL) {
+      struct Node *temp = currentNode->right;
+      free(currentNode);
+      return temp;
+    }
+
+    if (currentNode->right == NULL) {
+      struct Node *temp = currentNode->left;
+      free(currentNode);
+      return temp;
+    }
+
+    struct Node *nodeSuccessor = GetSuccessor(currentNode);
+    currentNode->value = nodeSuccessor->value;
+    currentNode->right = RemoveNode(currentNode->right, nodeSuccessor->value);
+  }
+  return currentNode;
 }
 
 struct Node *Search(struct Node *currentNode, double value) {
@@ -107,7 +124,17 @@ int main() {
   root = InsertNewNode(root, 2);
   root = InsertNewNode(root, 25);
   root = InsertNewNode(root, 5);
-
   printTree(root);
   printf("\n");
+  printNode(root);
+  root = RemoveNode(root, 15);
+  printTree(root);
+  printf("\n");
+  root = RemoveNode(root, 10);
+  printTree(root);
+  printf("\n");
+  root = InsertNewNode(root, 10);
+  printTree(root);
+  printf("\n");
+  printNode(root->left);
 }
